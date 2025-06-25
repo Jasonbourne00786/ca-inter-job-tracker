@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
@@ -27,11 +26,14 @@ def fetch_jobs_indeed(query, location):
     soup = BeautifulSoup(response.text, "html.parser")
 
     jobs = []
-    for card in soup.select(".job_seen_beacon"):
-        title = card.find("h2").text.strip()
-        company = card.find("span", class_="companyName").text.strip() if card.find("span", class_="companyName") else "N/A"
-        location = card.find("div", class_="companyLocation").text.strip() if card.find("div", class_="companyLocation") else "N/A"
-        link_tag = card.find("a")
+    for card in soup.select(".result"), soup.select(".tapItem"):
+        title_tag = card.find("h2")
+        title = title_tag.text.strip() if title_tag else "No title"
+        company_tag = card.find("span", class_="companyName")
+        company = company_tag.text.strip() if company_tag else "N/A"
+        location_tag = card.find("div", class_="companyLocation")
+        location = location_tag.text.strip() if location_tag else "N/A"
+        link_tag = card.find("a", href=True)
         link = "https://www.indeed.com" + link_tag['href'] if link_tag else "#"
 
         jobs.append({
